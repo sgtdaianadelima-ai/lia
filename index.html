@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-tema="rosa">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Lia</title>
+<meta name="description" content="Lia — assistente pessoal">
+<meta name="theme-color" content="#FAF6F1">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icone-192.png">
+<link rel="apple-touch-icon" href="icone-192.png">
+<style>
+/* ---------- temas ---------- */
+:root,[data-tema=rosa]{--bg:#FAF6F1;--card:#FFFFFF;--txt:#2E2A27;--sub:#7A716A;--linha:#ECE4DA;--pri:#B8466A;--pri2:#F7E1E8;--eu:#B8466A;--eutxt:#fff;--ok:#2F8A5B;--ok2:#DDF1E5;--no:#9C948C;--no2:#EFEAE4;--agua:#2F7CC4;--agua2:#DCEBF8;--kcal:#C77A1C;--kcal2:#FBEBD5;--sombra:0 1px 3px rgba(60,40,30,.08)}
+[data-tema=lilas]{--bg:#F7F5FC;--card:#FFFFFF;--txt:#29253A;--sub:#76708C;--linha:#E6E1F3;--pri:#7B5CC4;--pri2:#ECE6FA;--eu:#7B5CC4;--eutxt:#fff;--ok:#2F8A5B;--ok2:#DDF1E5;--no:#9A94AA;--no2:#EEEBF5;--agua:#2F7CC4;--agua2:#DCEBF8;--kcal:#C77A1C;--kcal2:#FBEBD5;--sombra:0 1px 3px rgba(40,30,80,.08)}
+[data-tema=verde]{--bg:#F4F7F3;--card:#FFFFFF;--txt:#243127;--sub:#6B7A6E;--linha:#E0E8DF;--pri:#4F7F5B;--pri2:#E1EEE3;--eu:#4F7F5B;--eutxt:#fff;--ok:#2F8A5B;--ok2:#DDF1E5;--no:#93A096;--no2:#E9EEE8;--agua:#2F7CC4;--agua2:#DCEBF8;--kcal:#C77A1C;--kcal2:#FBEBD5;--sombra:0 1px 3px rgba(30,60,40,.08)}
+[data-tema=azul]{--bg:#F3F7FB;--card:#FFFFFF;--txt:#1F2A36;--sub:#6A7786;--linha:#DFE7F0;--pri:#2D6CB5;--pri2:#DFEBF8;--eu:#2D6CB5;--eutxt:#fff;--ok:#2F8A5B;--ok2:#DDF1E5;--no:#95A0AC;--no2:#E8EDF3;--agua:#1E8C9E;--agua2:#D8F0F3;--kcal:#C77A1C;--kcal2:#FBEBD5;--sombra:0 1px 3px rgba(20,40,70,.08)}
+[data-tema=escuro]{--bg:#16130F;--card:#221E19;--txt:#F2ECE3;--sub:#A99E90;--linha:#38312A;--pri:#D4AF6A;--pri2:#3A2F1E;--eu:#D4AF6A;--eutxt:#1A150F;--ok:#5CC18B;--ok2:#1E3A2A;--no:#8A8076;--no2:#2E2822;--agua:#6AAEE8;--agua2:#1D3245;--kcal:#F0A94C;--kcal2:#40311C;--sombra:none}
+[data-tema=noite]{--bg:#121417;--card:#1C2026;--txt:#E8ECF1;--sub:#97A1AD;--linha:#2C333C;--pri:#E77E9C;--pri2:#3E2530;--eu:#E77E9C;--eutxt:#1A1014;--ok:#5CC18B;--ok2:#1E3A2A;--no:#7D8692;--no2:#262C34;--agua:#6AAEE8;--agua2:#1D3245;--kcal:#F0A94C;--kcal2:#40311C;--sombra:none}
+
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:var(--bg);color:var(--txt);font:16px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+body{padding-bottom:88px}
+body.com-chat{padding-bottom:160px}
+button{font:inherit;color:inherit;cursor:pointer}
+input,select,textarea{font:inherit;color:var(--txt);background:var(--card);border:1px solid var(--linha);border-radius:10px;padding:9px 10px;width:100%;min-width:0}
+textarea{resize:none}
+a{color:var(--pri)}
+header{position:sticky;top:0;z-index:5;background:var(--bg);padding:10px 16px;border-bottom:1px solid var(--linha);padding-top:calc(10px + env(safe-area-inset-top))}
+.topo{display:flex;align-items:center;gap:8px;max-width:760px;margin:0 auto}
+.topo h1{font-size:19px;margin:0;flex:1;display:flex;align-items:center;gap:8px}
+.topo h1 .bola{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--pri),var(--pri2));display:inline-block}
+.nav{display:flex;align-items:center;gap:6px}
+.nav button{border:1px solid var(--linha);background:var(--card);border-radius:10px;width:38px;height:36px;font-size:20px;line-height:1}
+.nav button:disabled{opacity:.35}
+.nav .dia{text-align:center;min-width:104px;font-weight:600;font-size:15px}
+.nav .dia small{display:block;font-weight:400;color:var(--sub);font-size:12px}
+main{padding:12px 16px;max-width:760px;margin:0 auto}
+.card{background:var(--card);border-radius:16px;padding:14px;margin-bottom:12px;box-shadow:var(--sombra);border:1px solid var(--linha)}
+.card h2{font-size:16px;margin:0 0 10px}
+.sub{color:var(--sub);font-size:13px}
+.seg{display:flex;background:var(--no2);border-radius:12px;padding:3px;margin-bottom:12px}
+.seg button{flex:1;border:0;background:none;padding:8px;border-radius:10px;font-size:14px;color:var(--sub)}
+.seg button.on{background:var(--card);color:var(--txt);font-weight:600;box-shadow:var(--sombra)}
+.barra{margin:4px 0 12px}
+.barra:last-child{margin-bottom:0}
+.barra .rot{display:flex;justify-content:space-between;align-items:baseline;gap:8px;font-size:14px}
+.barra .rot b{font-size:15px}
+.barra .trilho{height:10px;border-radius:6px;background:var(--no2);overflow:hidden;margin:5px 0 3px}
+.barra .enchido{height:100%;border-radius:6px}
+.item{padding:12px 0;border-bottom:1px solid var(--linha)}
+.item:last-child{border-bottom:0;padding-bottom:2px}
+.item:first-child{padding-top:2px}
+.item .cab{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.item .cab .nome{flex:1;font-weight:600}
+.item .cab .st{font-size:18px}
+.ctl{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.bt{border:1px solid var(--linha);background:var(--card);border-radius:999px;padding:7px 14px;font-size:14px;white-space:nowrap}
+.bt.on{background:var(--ok2);border-color:var(--ok);color:var(--ok);font-weight:600}
+.bt.on.no{background:var(--no2);border-color:var(--no);color:var(--sub)}
+.bt.pri{background:var(--pri);border-color:var(--pri);color:var(--eutxt);font-weight:600}
+.bt.cheio{width:100%;border-radius:12px;padding:11px}
+.bt.peq{padding:5px 10px;font-size:13px}
+.bt:disabled{opacity:.5}
+.valor{font-weight:700;font-size:17px}
+.lnk{border:0;background:none;color:var(--pri);text-decoration:underline;padding:0;font-size:14px}
+.faixa{background:var(--pri2);border-radius:12px;padding:10px 12px;margin-bottom:12px;font-size:14px;display:flex;justify-content:space-between;gap:8px;align-items:center}
+.linha2{display:flex;gap:8px;align-items:center}
+.linha2>*{flex:1}
+.chips{display:flex;flex-wrap:wrap;gap:6px;max-height:260px;overflow:auto}
+.chip{border:1px solid var(--linha);background:var(--bg);border-radius:12px;padding:6px 10px;font-size:13px;text-align:left}
+.chip small{display:block;color:var(--sub);font-size:11px}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th{text-align:left;font-size:12px;color:var(--sub);font-weight:600;padding:6px 4px;border-bottom:1px solid var(--linha)}
+td{padding:8px 4px;border-bottom:1px solid var(--linha);vertical-align:top}
+td.n,th.n{text-align:right;white-space:nowrap}
+tr.total td{font-weight:700;border-bottom:0}
+.x{border:0;background:none;color:var(--sub);font-size:18px;padding:0 4px}
+.grade{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.kpi{background:var(--bg);border-radius:12px;padding:10px}
+.kpi small{display:block;color:var(--sub);font-size:12px}
+.kpi b{font-size:20px}
+.sug{border:1px solid var(--linha);border-radius:12px;padding:8px;margin-bottom:8px}
+.sug .linha2{margin-top:6px}
+.sug .linha2>div:first-child{flex:2}
+.sug label{font-size:12px;color:var(--sub)}
+.campo{margin-bottom:10px}
+.campo label{display:block;font-size:13px;color:var(--sub);margin-bottom:4px}
+.edit{border:1px solid var(--linha);border-radius:12px;padding:10px;margin-bottom:8px}
+.edit .linha2{margin-bottom:6px}
+.edit input.emoji{flex:0 0 52px;text-align:center}
+.ord{display:flex;gap:4px;justify-content:flex-end}
+.foto{max-width:120px;border-radius:10px;display:block;margin-top:8px}
+.vazio{color:var(--sub);font-size:14px;text-align:center;padding:12px 0}
+svg text{fill:var(--sub);font-size:11px}
+
+/* ---------- conversa ---------- */
+.msgs{display:flex;flex-direction:column;gap:10px}
+.msg{max-width:86%;padding:10px 13px;border-radius:18px;font-size:15px;word-wrap:break-word}
+.msg.eu{align-self:flex-end;background:var(--eu);color:var(--eutxt);border-bottom-right-radius:6px}
+.msg.lia{align-self:flex-start;background:var(--card);border:1px solid var(--linha);border-bottom-left-radius:6px;box-shadow:var(--sombra)}
+.msg .rodape{display:flex;gap:10px;align-items:center;margin-top:6px;font-size:12px;color:var(--sub)}
+.msg .rodape button{border:0;background:none;padding:0;color:var(--sub);font-size:13px}
+.msg.digitando{color:var(--sub);font-style:italic}
+.acao{border:1px solid var(--linha);background:var(--bg);border-radius:14px;padding:10px;margin-top:8px;font-size:14px}
+.acao .tit{font-weight:700;margin-bottom:4px}
+.acao .botoes{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}
+.acao.feito{border-color:var(--ok);background:var(--ok2)}
+.acao.cancelado{opacity:.6}
+.dicas{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:8px 0 4px}
+.boasvindas{text-align:center;padding:24px 8px 8px}
+.boasvindas .bolao{width:72px;height:72px;border-radius:50%;margin:0 auto 10px;background:linear-gradient(135deg,var(--pri),var(--pri2));display:flex;align-items:center;justify-content:center;font-size:30px;color:var(--eutxt);font-weight:700}
+.compositor{position:fixed;left:0;right:0;bottom:calc(64px + env(safe-area-inset-bottom));background:var(--bg);border-top:1px solid var(--linha);padding:8px 12px;z-index:6}
+.compositor .dentro{max-width:760px;margin:0 auto;display:flex;gap:8px;align-items:flex-end}
+.compositor textarea{border-radius:20px;padding:10px 14px;max-height:120px;min-height:44px}
+.redondo{flex:0 0 44px;width:44px;height:44px;border-radius:50%;border:1px solid var(--linha);background:var(--card);font-size:20px;display:flex;align-items:center;justify-content:center}
+.redondo.pri{background:var(--pri);border-color:var(--pri);color:var(--eutxt)}
+.redondo.ouvindo{background:#D93838;border-color:#D93838;color:#fff;animation:pulsa 1.2s infinite}
+@keyframes pulsa{0%{box-shadow:0 0 0 0 rgba(217,56,56,.5)}100%{box-shadow:0 0 0 14px rgba(217,56,56,0)}}
+
+/* ---------- agenda ---------- */
+.dia-ag{font-weight:700;font-size:14px;color:var(--sub);margin:4px 0 6px;text-transform:capitalize}
+.ev{display:flex;gap:10px;padding:9px 0;border-bottom:1px solid var(--linha)}
+.ev:last-child{border-bottom:0}
+.ev .h{flex:0 0 58px;font-weight:700;font-size:14px}
+.ev .t small{display:block;color:var(--sub);font-size:12px}
+.tarefa{display:flex;gap:10px;align-items:flex-start;padding:8px 0;border-bottom:1px solid var(--linha)}
+.tarefa:last-child{border-bottom:0}
+.tarefa .caixa{flex:0 0 24px;height:24px;border:2px solid var(--pri);border-radius:6px;background:none}
+
+/* ---------- temas ---------- */
+.temas{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.tema{border:2px solid var(--linha);border-radius:14px;padding:8px;text-align:center;font-size:13px;background:var(--card)}
+.tema.on{border-color:var(--pri);font-weight:700}
+.tema .amostra{height:34px;border-radius:9px;margin-bottom:6px;display:flex;overflow:hidden}
+.tema .amostra span{flex:1}
+
+nav.abas{position:fixed;bottom:0;left:0;right:0;background:var(--card);border-top:1px solid var(--linha);display:flex;z-index:7;padding-bottom:env(safe-area-inset-bottom)}
+nav.abas button{flex:1;border:0;background:none;padding:8px 0 10px;font-size:12px;color:var(--sub);height:64px}
+nav.abas button span{display:block;font-size:20px}
+nav.abas button.ativa{color:var(--pri);font-weight:700}
+#carregando{position:fixed;top:0;left:0;right:0;height:3px;background:var(--pri);z-index:20;display:none;animation:pulso 1s infinite alternate}
+@keyframes pulso{from{opacity:.3}to{opacity:1}}
+#aviso{position:fixed;left:16px;right:16px;bottom:170px;z-index:21;background:var(--txt);color:var(--bg);border-radius:12px;padding:12px 14px;font-size:14px;display:none;max-width:560px;margin:0 auto}
+#aviso.erro{background:#B3261E;color:#fff}
+#modal{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:30;display:none;align-items:flex-end;justify-content:center}
+#modal .caixa{background:var(--card);width:100%;max-width:640px;border-radius:18px 18px 0 0;padding:16px 16px calc(16px + env(safe-area-inset-bottom));max-height:88vh;overflow:auto}
+#modal h3{margin:0 0 12px;font-size:17px}
+@media (min-width:900px){#modal{align-items:center}#modal .caixa{border-radius:18px}}
+</style>
+</head>
+<body>
+<div id="carregando"></div>
+<header>
+  <div class="topo">
+    <h1 id="titulo"><span class="bola"></span>Lia</h1>
+    <div class="nav" id="nav"></div>
+  </div>
+</header>
+<main id="conteudo"><p class="vazio">Carregando…</p></main>
+<div class="compositor" id="compositor" style="display:none">
+  <div class="dentro">
+    <button class="redondo" id="btMic" onclick="microfone()" aria-label="Falar">🎤</button>
+    <textarea id="entrada" rows="1" placeholder="Fale ou escreva para a Lia…" oninput="autoAltura(this)" onkeydown="if(event.key==='Enter'&&!event.shiftKey&&!ehCelular()){event.preventDefault();enviarDigitado()}"></textarea>
+    <button class="redondo pri" onclick="enviarDigitado()" aria-label="Enviar">➤</button>
+  </div>
+</div>
+<nav class="abas">
+  <button data-aba="lia" onclick="irAba('lia')"><span>💬</span>Lia</button>
+  <button data-aba="agenda" onclick="irAba('agenda')"><span>📅</span>Agenda</button>
+  <button data-aba="saude" onclick="irAba('saude')"><span>💚</span>Saúde</button>
+  <button data-aba="ajustes" onclick="irAba('ajustes')"><span>⚙️</span>Ajustes</button>
+</nav>
+<div id="aviso"></div>
+<div id="modal" onclick="if(event.target===this)fecharModal()"><div class="caixa" id="caixa"></div></div>
+<script src="app.js"></script>
+</body>
+</html>
