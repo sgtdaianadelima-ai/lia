@@ -2,7 +2,7 @@
  * Telas: Hoje, Agenda, Conversa (botão do meio), Saúde (Dia, Comida, Gráficos, Metas) e Ajustes.
  * Os dados ficam na planilha Google, acessada pela "ponte" (Apps Script). Nenhum dado pessoal fica neste código. */
 
-const VERSAO_APP = 3;
+const VERSAO_APP = 4;
 const SEM = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
 const SEMANA = ['domingo','segunda','terça','quarta','quinta','sexta','sábado'];
 const MESES = ['janeiro','fevereiro','março','abril','maio','junho','julho','agosto','setembro','outubro','novembro','dezembro'];
@@ -938,10 +938,11 @@ function telaAjustes() {
     <ol class="sub" style="margin:0;padding-left:18px;display:grid;gap:4px">
       <li>No Garmin Connect: Mais > Configurações > Aplicativos conectados > Health Connect > ligar tudo.</li>
       <li>No Samsung Health: Configurações > Health Connect > permitir tudo.</li>
-      <li>Instale o app <b>HC Webhook</b> na Play Store e toque em <b>Grant Permissions</b>: passos, sono, exercício, calorias ativas e peso.</li>
-      <li>Em <b>Webhooks</b>, toque em adicionar e cole o endereço do botão abaixo. Formato: JSON.</li>
-      <li>Em <b>Data Types</b>, deixe passos e calorias ativas em <b>Daily</b>. Sincronizar a cada 30 ou 60 minutos e <b>Save</b>.</li>
-      <li>Toque em <b>Sync Now</b> para testar. Em Configurações do celular > Bateria, deixe o HC Webhook sem restrição.</li>
+      <li>Instale o <b>HC Webhook</b> grátis: no Chrome do celular abra <a href="https://github.com/mcnaveen/health-connect-webhook/releases/latest" target="_blank" rel="noopener">github.com/mcnaveen/health-connect-webhook/releases/latest</a> e baixe <b>app-foss-release.apk</b> (na Play Store ele é pago).</li>
+      <li>Abra o app. Na aba <b>Lar</b>, toque em <b>Conceder permissão</b> e marque Passos, Sono, Exercício, Calorias ativas e Peso.</li>
+      <li>Na aba <b>Webhooks</b>, toque em <b>Adicionar webhook</b>, cole em <b>URL do webhook</b> o endereço do botão abaixo (Formato de envio: JSON) e toque em <b>Salvar</b>.</li>
+      <li>Na aba <b>Lar</b>, em <b>Tipos de dados</b>, deixe a <b>Resolução</b> de passos e calorias ativas em <b>Diário</b>. Em <b>Quando sincronizar</b>, escolha <b>Intervalo</b> de 30 minutos. Se aparecer, toque em <b>Conceder permissão em segundo plano</b>.</li>
+      <li>Toque em <b>Sincronizar agora</b>. Em Configurações do celular > Aplicativos > HC Webhook > Bateria, escolha <b>Sem restrição</b>.</li>
     </ol>
     <button class="bt pri cheio" id="btCopiarHc">Copiar endereço para o HC Webhook</button>
     <p class="sub" style="margin:0">Esse endereço tem o seu código de acesso: não mande para ninguém.</p></div>`;
