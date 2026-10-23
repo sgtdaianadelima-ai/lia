@@ -2,7 +2,7 @@
  * Telas: Hoje, Agenda, Conversa (botão do meio), Saúde (Dia, Comida, Gráficos, Metas) e Ajustes.
  * Os dados ficam na planilha Google, acessada pela "ponte" (Apps Script). Nenhum dado pessoal fica neste código. */
 
-const VERSAO_APP = 2;
+const VERSAO_APP = 3;
 const SEM = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
 const SEMANA = ['domingo','segunda','terça','quarta','quinta','sexta','sábado'];
 const MESES = ['janeiro','fevereiro','março','abril','maio','junho','julho','agosto','setembro','outubro','novembro','dezembro'];
@@ -217,6 +217,7 @@ function irAba(a, s) {
     if (!D && (sub === 'dia' || sub === 'comida')) carregarDia();
     if ((sub === 'graficos' || sub === 'metas') && !R) com(() => api('carregarRelatorio')).then(r => { R = r; calc = null; if (aba === 'saude') desenhar(); });
   }
+  if (a === 'ajustes' && !H) carregarHoje();
   if (a === 'ajustes') com(() => api('carregarAjustes')).then(r => { A = prepararAjustes(r); if (aba === 'ajustes') desenhar(); });
   if (a === 'lia') rolarFim();
 }
@@ -261,6 +262,7 @@ function telaHoje() {
     ${anel(t.prot, c.meta_proteina, 'var(--accent)', fmt(t.prot) + ' g', `de ${fmt(c.meta_proteina)} g proteína`)}
     ${anel(ml, c.meta_agua_ml, 'var(--agua)', fmt(ml / 1000, 1) + ' L', `de ${fmt(c.meta_agua_ml / 1000, 1)} L água`)}
     ${anel(t.kcal, c.meta_calorias, 'var(--kcal)', fmt(t.kcal), `de ${fmt(c.meta_calorias)} kcal`)}</div></div>`;
+  h += cardRelogio(H.atividade);
   const hoje = hojeStr();
   const evs = G && !G.erro ? G.eventos.filter(e => e.data === hoje) : [];
   const tars = G && !G.erro ? G.tarefas.filter(x => x.data && chave(x.data) <= chave(hoje)) : [];
@@ -273,6 +275,16 @@ function telaHoje() {
       return `<button class="chip ${ok ? 'feito' : ''}" data-rapido="${o.ix}">${ok ? IC.check : iconeItem(o.i)}${esc(o.i.item.replace(/ em jejum$/i, ''))}</button>`; }).join('')}</div>
     <p class="sub" style="margin:0">Toque para marcar. Peso, água, comida e treino abrem o dia.</p></div></div>`;
   return h;
+}
+const horasMin = m => m >= 60 ? `${Math.floor(m / 60)} h${m % 60 ? ' ' + String(m % 60).padStart(2, '0') : ''}` : `${m} min`;
+function cardRelogio(at) {
+  if (!at) return '';
+  if (!at.tem && !at.ultimaSinc) return `<div class="card"><div class="cab"><h2>Relógio e celular</h2><button class="lnk" data-ir="ajustes">conectar</button></div><p class="sub" style="margin:0">Ligue o Samsung Health e o Garmin para os passos, o sono e os treinos chegarem sozinhos.</p></div>`;
+  return `<div class="card"><div class="cab"><h2>Do relógio</h2><small>${at.ultimaSinc ? 'atualizado ' + esc(at.ultimaSinc.slice(11) || at.ultimaSinc) : ''}</small></div><div class="kpis">
+    <div class="kpi"><small>Passos</small><b>${fmt(at.passos)}</b></div>
+    <div class="kpi"><small>Sono</small><b>${at.sonoMin ? horasMin(at.sonoMin) : '—'}</b></div>
+    <div class="kpi"><small>Calorias em movimento</small><b>${at.caloriasAtivas ? fmt(at.caloriasAtivas) : '—'}</b></div></div>
+    ${at.treinos.length ? `<div class="chips">${at.treinos.map(t => `<span class="chip feito">${IC.treino}${esc(t.nome)} · ${t.inicio} · ${horasMin(t.minutos)}</span>`).join('')}</div>` : ''}</div>`;
 }
 document.addEventListener('click', async e => {
   const b = e.target.closest('[data-rapido]'); if (!b || !H) return;
@@ -724,7 +736,7 @@ function svgBarras(pts, meta, rotMeta, cor, unid) {
   const rot = v => v >= 1000 ? fmt(v / 1000, 1) + 'k' : mx < 10 ? fmt(v, 1) : fmt(v);
   let g = '';
   for (let k = 0; k <= 4; k++) { const v = mx * k / 4; g += `<line x1="${e}" x2="${W - d}" y1="${Y(v)}" y2="${Y(v)}" stroke="var(--soft)"/><text x="${e - 6}" y="${Y(v) + 3.5}" text-anchor="end">${rot(v)}</text>`; }
-  g += pts.map((p, i) => { const y = Y(p[1]); return `<rect x="${(e + i * larg + larg * .17).toFixed(1)}" y="${y.toFixed(1)}" width="${Math.max(2, larg * .66).toFixed(1)}" height="${Math.max(0, H - b - y).toFixed(1)}" rx="${Math.min(6, larg * .3).toFixed(1)}" fill="${cor}"><title>${p[0]}: ${fmt(p[1], 1)} ${unid}</title></rect>`; }).join('');
+  g += pts.map((p, i) => { const y = Y(p[1]), lb = Math.max(2, Math.min(34, larg * .66)); return `<rect x="${(e + i * larg + (larg - lb) / 2).toFixed(1)}" y="${y.toFixed(1)}" width="${lb.toFixed(1)}" height="${Math.max(0, H - b - y).toFixed(1)}" rx="${Math.min(6, larg * .3).toFixed(1)}" fill="${cor}"><title>${p[0]}: ${fmt(p[1], 1)} ${unid}</title></rect>`; }).join('');
   if (meta) g += `<line x1="${e}" x2="${W - d}" y1="${Y(meta)}" y2="${Y(meta)}" stroke="var(--ink-2)" stroke-dasharray="5 4"/><text x="${W - d}" y="${Y(meta) - 5}" text-anchor="end" style="fill:var(--ink-2)">${rotMeta}</text>`;
   const marcas = n > 6 ? [0, Math.floor((n - 1) / 2), n - 1] : pts.map((_, i) => i);
   g += marcas.map(i => `<text x="${(e + i * larg + larg / 2).toFixed(1)}" y="${H - 6}" text-anchor="middle">${curta(pts[i][0])}</text>`).join('');
@@ -764,23 +776,36 @@ function dadosGrafico() {
       return {svg: svgBarras(p, c.meta_agua_ml / 1000, `meta ${fmt(c.meta_agua_ml / 1000, 1)} L`, 'var(--agua)', 'L'),
         kpis: kpi('Média por dia', fmt(media(p), 1) + ' L') + kpi('Dias na meta', p.filter(x => x[1] * 1000 >= c.meta_agua_ml).length + ' de ' + p.length) + kpi('Melhor dia', fmt(Math.max(...p.map(x => x[1])), 1) + ' L')};
     }
+    case 'passos': {
+      const p = dias.filter(d => d.passos > 0).map(d => [d.data, d.passos]);
+      if (!p.length) return nada('Os passos aparecem aqui quando o relógio estiver ligado (Ajustes > Relógio e celular).');
+      return {svg: svgBarras(p, 8000, '8 mil passos', 'var(--kcal)', 'passos'),
+        kpis: kpi('Média por dia', fmt(media(p))) + kpi('Dias com 8 mil ou mais', p.filter(x => x[1] >= 8000).length + ' de ' + p.length) + kpi('Melhor dia', fmt(Math.max(...p.map(x => x[1]))))};
+    }
+    case 'sono': {
+      const p = dias.filter(d => d.sonoMin > 0).map(d => [d.data, d.sonoMin / 60]);
+      if (!p.length) return nada('O sono aparece aqui quando o relógio estiver ligado (Ajustes > Relógio e celular).');
+      return {svg: svgBarras(p, 7, '7 h', 'var(--agua)', 'horas'),
+        kpis: kpi('Média por noite', horasMin(Math.round(media(p) * 60))) + kpi('Noites com 7 h ou mais', p.filter(x => x[1] >= 7).length + ' de ' + p.length) + kpi('Menor noite', horasMin(Math.round(Math.min(...p.map(x => x[1])) * 60)))};
+    }
     case 'treino': {
       if (!nm.treino) return nada('Inclua um item de treino na sua lista em Ajustes.');
-      const feito = d => { const v = d.reg[nm.treino.item]; return !!v && !/^n[ãa]o\b/i.test(v); };
+      const feito = d => { const v = d.reg[nm.treino.item]; return (d.treinos > 0) || (!!v && !/^n[ãa]o\b/i.test(v)); };
       const semanas = {};
       dias.forEach(d => { const s = semanaDe(d.data); semanas[s] = (semanas[s] || 0) + (feito(d) ? 1 : 0); });
       const p = Object.keys(semanas).sort((a, b) => chave(a) < chave(b) ? -1 : 1).map(s => [s, semanas[s]]);
       if (!p.length) return nada('Nenhum treino registrado nesse período.');
       const total = p.reduce((s, x) => s + x[1], 0);
+      const minutos = dias.reduce((s, d) => s + (d.treinoMin || 0), 0);
       return {svg: svgBarras(p, 3, '3 por semana', 'var(--treino)', 'treinos'),
-        kpis: kpi('Treinos', String(total)) + kpi('Média por semana', fmt(total / p.length, 1)) + kpi('Semanas com treino', p.filter(x => x[1] > 0).length + ' de ' + p.length)};
+        kpis: kpi('Treinos', String(total)) + kpi('Média por semana', fmt(total / p.length, 1)) + kpi(minutos ? 'Tempo no relógio' : 'Semanas com treino', minutos ? horasMin(minutos) : p.filter(x => x[1] > 0).length + ' de ' + p.length)};
     }
   }
 }
 function telaGraficos() {
   if (!R) return '<div class="card"><p class="vazio">Carregando seu histórico…</p></div>';
-  const m = [['peso','Peso'],['proteina','Proteína'],['calorias','Calorias'],['agua','Hidratação'],['treino','Treino']];
-  const per = [['30','30 dias'],['90','90 dias'],['tudo','Tudo']];
+  const m = [['peso','Peso'],['proteina','Proteína'],['calorias','Calorias'],['agua','Hidratação'],['treino','Treino'],['passos','Passos'],['sono','Sono']];
+  const per =[['30','30 dias'],['90','90 dias'],['tudo','Tudo']];
   const d = dadosGrafico();
   let h = `<div class="chips">${m.map(([k, n]) => `<button class="chip" data-graf="${k}" aria-pressed="${graf.metrica === k}">${n}</button>`).join('')}</div>
     <div class="card"><div class="cab"><h2>${m.find(x => x[0] === graf.metrica)[1]}</h2><div class="seg" style="flex:none">${per.map(([k, n]) => `<button data-periodo="${k}" aria-pressed="${graf.periodo === k}">${n}</button>`).join('')}</div></div>
@@ -907,6 +932,19 @@ function telaAjustes() {
     <button class="bt cheio" id="btTesteVoz">${IC.ouvir}Ouvir teste</button>
     <h2 style="margin-top:6px">Conexão</h2>${CONEXAO ? '<p style="margin:0">Lia conectada à sua planilha e agenda.</p><button class="lnk" id="btDesconectar">desconectar este aparelho</button>' : '<p class="sub" style="margin:0">Não conectada. Abra o link “Conectar a Lia” do seu e-mail.</p>'}</div></div>`;
   if (!CONEXAO) return h;
+  const ult = H && H.atividade && H.atividade.ultimaSinc;
+  h += `<div class="card"><div class="cab"><h2>Relógio e celular</h2><small>${ult ? 'última vez: ' + esc(ult) : 'ainda não ligado'}</small></div>
+    <p style="margin:0">Passos, sono, treinos e peso chegam sozinhos do Samsung Health e do Garmin, pelo Health Connect do celular.</p>
+    <ol class="sub" style="margin:0;padding-left:18px;display:grid;gap:4px">
+      <li>No Garmin Connect: Mais > Configurações > Aplicativos conectados > Health Connect > ligar tudo.</li>
+      <li>No Samsung Health: Configurações > Health Connect > permitir tudo.</li>
+      <li>Instale o app <b>HC Webhook</b> na Play Store e toque em <b>Grant Permissions</b>: passos, sono, exercício, calorias ativas e peso.</li>
+      <li>Em <b>Webhooks</b>, toque em adicionar e cole o endereço do botão abaixo. Formato: JSON.</li>
+      <li>Em <b>Data Types</b>, deixe passos e calorias ativas em <b>Daily</b>. Sincronizar a cada 30 ou 60 minutos e <b>Save</b>.</li>
+      <li>Toque em <b>Sync Now</b> para testar. Em Configurações do celular > Bateria, deixe o HC Webhook sem restrição.</li>
+    </ol>
+    <button class="bt pri cheio" id="btCopiarHc">Copiar endereço para o HC Webhook</button>
+    <p class="sub" style="margin:0">Esse endereço tem o seu código de acesso: não mande para ninguém.</p></div>`;
   if (!A) return h + '<div class="card"><p class="vazio">Carregando…</p></div>';
   const c = A.config;
   const cfgCampo = (k, rot) => `<div class="campo"><label for="cf-${k}">${rot}</label><input id="cf-${k}" data-cfg="${k}" value="${esc(c[k] ?? '')}"></div>`;
@@ -928,12 +966,18 @@ function telaAjustes() {
   return h;
 }
 document.addEventListener('click', e => {
-  const t = e.target.closest('[data-tema],[data-cor],[data-modo],[data-avatar],#btTesteVoz,#btDesconectar,#btIncluirItem,[data-mover],[data-tiraritem],#btApagarChave,#btSalvarAjustes'); if (!t) return;
+  const t = e.target.closest('[data-tema],[data-cor],[data-modo],[data-avatar],#btTesteVoz,#btCopiarHc,#btDesconectar,#btIncluirItem,[data-mover],[data-tiraritem],#btApagarChave,#btSalvarAjustes'); if (!t) return;
   if (t.dataset.tema) { PREF.tema = t.dataset.tema; salvarPref(); desenhar(); return; }
   if (t.dataset.cor !== undefined) { PREF.cor = t.dataset.cor; salvarPref(); desenhar(); return; }
   if (t.dataset.modo) { PREF.modo = t.dataset.modo; salvarPref(); desenhar(); return; }
   if (t.dataset.avatar) { PREF.avatar = t.dataset.avatar; salvarPref(); desenhar(); return; }
   if (t.id === 'btTesteVoz') { falar('Oi, Daia! Eu sou a Lia. Assim fica bom?', true); return; }
+  if (t.id === 'btCopiarHc') {
+    const end = CONEXAO.u + (CONEXAO.u.includes('?') ? '&' : '?') + 'fonte=hc&t=' + encodeURIComponent(CONEXAO.t);
+    const mostrar = () => { abrirModal(`<h3>Endereço para o HC Webhook</h3><p class="sub" style="margin:0">Segure o dedo no texto para copiar.</p><textarea id="endHc" rows="5" readonly>${esc(end)}</textarea><button class="bt pri cheio" id="mFechar">Pronto</button>`); $('#endHc').select(); $('#mFechar').onclick = fecharModal; };
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(end).then(() => aviso('Endereço copiado. Cole no HC Webhook.'), mostrar); else mostrar();
+    return;
+  }
   if (t.id === 'btDesconectar') {
     abrirModal(`<h3>Desconectar este aparelho?</h3><p class="sub">Para conectar de novo, abra outra vez o link do seu e-mail.</p><div class="grade2"><button class="bt cheio" id="mNao">Cancelar</button><button class="bt pri cheio" id="mSim">Desconectar</button></div>`);
     $('#mNao').onclick = fecharModal; $('#mSim').onclick = () => { try { localStorage.removeItem('lia_conexao'); } catch (er) {} location.reload(); };

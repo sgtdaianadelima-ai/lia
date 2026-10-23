@@ -157,7 +157,7 @@ input[type=checkbox]{width:auto;accent-color:var(--accent)}
 .grafico svg{width:100%;height:auto;display:block}
 .grafico text{font-family:var(--f-texto);font-size:10.5px;fill:var(--ink-3)}
 .kpis{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
-@media (max-width:380px){.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:330px){.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}}
 .kpi b{font-size:17px}
 .kpi{background:var(--bg);border-radius:var(--r-md);padding:10px 12px}
 .kpi small{display:block;color:var(--ink-3);font-size:12px;font-weight:600}
